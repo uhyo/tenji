@@ -6,10 +6,12 @@ import {
     goyoonTable,
     kigouTable,
     numberTable,
+    alphabetTable,
 } from './table';
 
 const NORMAL_MODE = 0;
 const NUMBER_MODE = 1;
+const ALPHABET_MODE = 2;
 
 export interface ToTenjiOptions {
 }
@@ -90,6 +92,11 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                 sub = 0x10;
                 c = 'う';
             }
+            if(mode===ALPHABET_MODE){
+                //英語→日本語
+                code.push(0x24);
+                mode = NORMAL_MODE;
+            }
             //conversion of Hiragana
             if(dakuonList.indexOf(c)>=0){
                 //濁音 mark
@@ -113,6 +120,18 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
         }else if(c in kigouTable){
             code.push(kigouTable[c]);
             mode = NORMAL_MODE;
+        }else if(c==='、'){
+            code.push(0x30);
+            spaces = 1;
+            mode = NORMAL_MODE;
+        }else if(c==='。'){
+            code.push(0x32);
+            spaces = 2;
+            mode = NORMAL_MODE;
+        }else if(c==='・'){
+            code.push(0x10);
+            spaces = 1;
+            mode = NORMAL_MODE;
         }else if(/^[0-9]$/.test(c)){
             //数字
             if(mode !== NUMBER_MODE){
@@ -127,18 +146,20 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
         }else if(mode === NUMBER_MODE && c===','){
             //位取り点
             code.push(0x04);
-        }else if(c==='、'){
-            code.push(0x30);
-            spaces = 1;
-            mode = NORMAL_MODE;
-        }else if(c==='。'){
-            code.push(0x32);
-            spaces = 2;
-            mode = NORMAL_MODE;
-        }else if(c==='・'){
-            code.push(0x10);
-            spaces = 1;
-            mode = NORMAL_MODE;
+        }else if(/^[a-zA-Z]$/.test(c)){
+            //アルファベット
+            if(mode !== ALPHABET_MODE){
+                //外字符
+                code.push(0x30);
+                mode = ALPHABET_MODE;
+            }
+            let cd = c.charCodeAt(0);
+            if(cd <= 0x5a){
+                //大文字なので大文字符（TODO: 二重大文字符は？）
+                code.push(0x20);
+                cd += 0x20;
+            }
+            code.push(alphabetTable[cd-0x61]);
         }else{
             code.push(text.charAt(i));
         }

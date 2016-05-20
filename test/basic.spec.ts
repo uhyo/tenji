@@ -149,4 +149,13 @@ describe('Basic conversion to Tenji', ()=>{
             expect(toTenji('12えん')).toBe('⠼⠁⠃⠤⠋⠴');
         });
     });
+    describe('Latin Alphabets',()=>{
+        it('basic alphabets',()=>{
+            expect(toTenji('abcdefghijklmnopqrstuvwxyz'))
+            .toBe('⠰⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵');
+            expect(toTenji('USA'))
+            .toBe('⠰⠠⠥⠠⠎⠠⠁');
+            expect(toTenji('Aきゅう')).toBe('⠰⠠⠁⠤⠈⠩⠉');
+        });
+    });
 });
