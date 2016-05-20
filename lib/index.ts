@@ -5,7 +5,11 @@ import {
     yoonTable,
     goyoonTable,
     kigouTable,
+    numberTable,
 } from './table';
+
+const NORMAL_MODE = 0;
+const NUMBER_MODE = 1;
 
 export interface ToTenjiOptions {
 }
@@ -13,6 +17,8 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
     const code:Array<number|string> = [];
     //空白を入れる予約
     let spaces = 0;
+    //モード
+    let mode = NORMAL_MODE;
 
     for(let i=0, l=text.length; i<l; i++){
         let c = katakanaToHiragana(text.charAt(i));
@@ -94,25 +100,47 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             }else if(c in hiraganaTable){
                 if(sub !== 0){
                     code.push(sub);
+                }else if(mode===NUMBER_MODE && 'あいうえおらりるれろ'.indexOf(c)>=0){
+                    //数値のあとにあ行・ら行の場合は第1つなぎ符を挿入
+                    code.push(0x24);
                 }
                 code.push(hiraganaTable[c]);
             }else{
                 //だめだった
                 code.push(c);
             }
+            mode = NORMAL_MODE;
         }else if(c in kigouTable){
             code.push(kigouTable[c]);
+            mode = NORMAL_MODE;
+        }else if(/^[0-9]$/.test(c)){
+            //数字
+            if(mode !== NUMBER_MODE){
+                //数符
+                code.push(0x3c);
+                mode = NUMBER_MODE;
+            }
+            code.push(numberTable[c]);
+        }else if(mode === NUMBER_MODE && c==='.'){
+            //小数点
+            code.push(0x02);
+        }else if(mode === NUMBER_MODE && c===','){
+            //位取り点
+            code.push(0x04);
         }else if(c==='、'){
             code.push(0x30);
             spaces = 1;
+            mode = NORMAL_MODE;
         }else if(c==='。'){
             code.push(0x32);
             spaces = 2;
+            mode = NORMAL_MODE;
         }else if(c==='・'){
             code.push(0x10);
             spaces = 1;
+            mode = NORMAL_MODE;
         }else{
-            code.push(c);
+            code.push(text.charAt(i));
         }
     }
     return codeToTenjiString(code);

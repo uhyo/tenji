@@ -137,4 +137,16 @@ describe('Basic conversion to Tenji', ()=>{
 ⠉⠲`);
         });
     });
+    describe('Numbers',()=>{
+        it('basic number',()=>{
+            expect(toTenji('1234567890')).toBe('⠼⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚');
+        });
+        it('小数点と位取り点',()=>{
+            expect(toTenji('12,345.67')).toBe('⠼⠁⠃⠄⠉⠙⠑⠂⠋⠛');
+        });
+        it('つなぎ符',()=>{
+            expect(toTenji('12ねん')).toBe('⠼⠁⠃⠏⠴');
+            expect(toTenji('12えん')).toBe('⠼⠁⠃⠤⠋⠴');
+        });
+    });
 });
