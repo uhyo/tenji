@@ -65,4 +65,66 @@ describe('Basic conversion to Tenji', ()=>{
             });
         });
     });
+    describe('Katakana',()=>{
+        it('清音',()=>{
+            expect(toTenji('アイウエオ')).toBe('⠁⠃⠉⠋⠊');
+            expect(toTenji('カキクケコ')).toBe('⠡⠣⠩⠫⠪');
+            expect(toTenji('サシスセソ')).toBe('⠱⠳⠹⠻⠺');
+            expect(toTenji('タチツテト')).toBe('⠕⠗⠝⠟⠞');
+            expect(toTenji('ナニヌネノ')).toBe('⠅⠇⠍⠏⠎');
+            expect(toTenji('ハヒフヘホ')).toBe('⠥⠧⠭⠯⠮');
+            expect(toTenji('マミムメモ')).toBe('⠵⠷⠽⠿⠾');
+            expect(toTenji('ヤユヨ')).toBe('⠌⠬⠜');
+            expect(toTenji('ラリルレロ')).toBe('⠑⠓⠙⠛⠚');
+            expect(toTenji('ワヰヱヲン')).toBe('⠄⠆⠖⠔⠴');
+        });
+        it('濁音',()=>{
+            expect(toTenji('ガギグゲゴ')).toBe('⠐⠡⠐⠣⠐⠩⠐⠫⠐⠪');
+            expect(toTenji('ザジズゼゾ')).toBe('⠐⠱⠐⠳⠐⠹⠐⠻⠐⠺');
+            expect(toTenji('ダヂヅデド')).toBe('⠐⠕⠐⠗⠐⠝⠐⠟⠐⠞');
+            expect(toTenji('バビブベボ')).toBe('⠐⠥⠐⠧⠐⠭⠐⠯⠐⠮');
+            expect(toTenji('ヴ')).toBe('⠐⠉');
+        });
+        it('半濁音',()=>{
+            expect(toTenji('パピプペポ')).toBe('⠠⠥⠠⠧⠠⠭⠠⠯⠠⠮');
+        });
+        it('撥音',()=>{
+            expect(toTenji('ッ')).toBe('⠂');
+        });
+        it('basic 拗音',()=>{
+            expect(toTenji('キャキュキョ')).toBe('⠈⠡⠈⠩⠈⠪');
+            expect(toTenji('シャシュショ')).toBe('⠈⠱⠈⠹⠈⠺');
+            expect(toTenji('チャチュチョ')).toBe('⠈⠕⠈⠝⠈⠞');
+            expect(toTenji('ニャニュニョ')).toBe('⠈⠅⠈⠍⠈⠎');
+            expect(toTenji('ヒャヒュヒョ')).toBe('⠈⠥⠈⠭⠈⠮');
+            expect(toTenji('ミャミュミョ')).toBe('⠈⠵⠈⠽⠈⠾');
+            expect(toTenji('リャリュリョ')).toBe('⠈⠑⠈⠙⠈⠚');
+            expect(toTenji('ギャギュギョ')).toBe('⠘⠡⠘⠩⠘⠪');
+            expect(toTenji('ジャジュジョ')).toBe('⠘⠱⠘⠹⠘⠺');
+            expect(toTenji('ヂャヂュヂョ')).toBe('⠘⠕⠘⠝⠘⠞');
+            expect(toTenji('ビャビュビョ')).toBe('⠘⠥⠘⠭⠘⠮');
+            expect(toTenji('ピャピュピョ')).toBe('⠨⠥⠨⠭⠨⠮');
+        });
+        describe('advanced 拗音',()=>{
+            it('開拗音',()=>{
+                expect(toTenji('イェキェシェチェニェヒェミェリェ')).toBe('⠈⠋⠈⠫⠈⠻⠈⠟⠈⠏⠈⠯⠈⠿⠈⠛');
+                expect(toTenji('ギェジェヂェビェピェ')).toBe('⠘⠫⠘⠻⠘⠟⠘⠯⠨⠯');
+                expect(toTenji('スィティズィディ')).toBe('⠈⠳⠈⠗⠘⠳⠘⠗');
+            });
+            it('合拗音',()=>{
+                expect(toTenji('ウァウィウェウォ')).toBe('⠢⠁⠢⠃⠢⠋⠢⠊');
+                expect(toTenji('クァクィクェクォ')).toBe('⠢⠡⠢⠣⠢⠫⠢⠪');
+                expect(toTenji('ツァツィツェツォ')).toBe('⠢⠕⠢⠗⠢⠟⠢⠞');
+                expect(toTenji('ファフィフェフォ')).toBe('⠢⠥⠢⠧⠢⠯⠢⠮');
+                expect(toTenji('グァグィグェグォ')).toBe('⠲⠡⠲⠣⠲⠫⠲⠪');
+                expect(toTenji('ヴァヴィヴェヴォ')).toBe('⠲⠥⠲⠧⠲⠯⠲⠮');
+            });
+            it('その他',()=>{
+                expect(toTenji('トゥドゥ')).toBe('⠢⠝⠲⠝');
+                expect(toTenji('テュフュフョ')).toBe('⠨⠝⠨⠬⠨⠜');
+                expect(toTenji('デュヴュヴョ')).toBe('⠸⠝⠸⠬⠸⠜');
+
+            });
+        });
+    });
 });

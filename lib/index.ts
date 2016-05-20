@@ -12,11 +12,11 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
     const code:Array<number> = [];
 
     for(let i=0, l=text.length; i<l; i++){
-        let c = text.charAt(i);
+        let c = katakanaToHiragana(text.charAt(i));
         if(/^[\u3041-\u3094]$/.test(c)){
             //前につける符号
             let sub = 0;
-            const c2 = text.charAt(i+1);
+            const c2 = katakanaToHiragana(text.charAt(i+1));
             if((c2==='ゃ' || c2==='ゅ' || c2==='ょ' || c2==='ぇ') && (c in yoonTable)){
                 //拗音
                 sub = 8;
@@ -91,6 +91,13 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
     return codeToTenjiString(code);
 }
 
+function katakanaToHiragana(c:string):string{
+    if(/^[\u30a1-\u30f4]$/.test(c)){
+        //detect katakana
+        return String.fromCharCode(c.charCodeAt(0) - 0x60);
+    }
+    return c;
+}
 
 
 function codeToTenjiString(code:Array<number>):string{
