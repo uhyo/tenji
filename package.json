@@ -1,0 +1,33 @@
+{
+  "name": "tenji",
+  "version": "0.0.1",
+  "description": "Converts Japanese text and 点字.",
+  "main": "dist/lib/index.js",
+  "scripts": {
+    "build": "npm-run-all build:dtsm build:tsc",
+    "build:dtsm": "dtsm install",
+    "build:tsc": "tsc",
+    "clean": "rimraf dist",
+    "test": "node run-jasmine.js",
+    "watch": "npm-run-all --parallel watch:*",
+    "watch:tsc": "tsc --watch",
+    "watch:test": "mkdirp dist && watch 'node run-jasmine.js' dist/ --verbose"
+  },
+  "keywords": [
+    "tenji",
+    "点字",
+    "Braille"
+  ],
+  "author": "uhyo",
+  "license": "MIT",
+  "devDependencies": {
+    "dtsm": "^1.1.0",
+    "jasmine": "^2.4.1",
+    "jasmine-spec-reporter": "^2.4.0",
+    "mkdirp": "^0.5.1",
+    "npm-run-all": "^2.1.0",
+    "rimraf": "^2.5.2",
+    "typescript": "^1.8.10",
+    "watch": "^0.18.0"
+  }
+}
