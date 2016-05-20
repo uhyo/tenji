@@ -157,5 +157,9 @@ describe('Basic conversion to Tenji', ()=>{
             .toBe('⠰⠠⠥⠠⠎⠠⠁');
             expect(toTenji('Aきゅう')).toBe('⠰⠠⠁⠤⠈⠩⠉');
         });
+        it('alphabet and numbers',()=>{
+            expect(toTenji('B787'))
+            .toBe('⠰⠠⠃⠼⠛⠓⠛');
+        });
     });
 });
