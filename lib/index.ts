@@ -4,15 +4,26 @@ import {
     handakuonList,
     yoonTable,
     goyoonTable,
+    kigouTable,
 } from './table';
 
 export interface ToTenjiOptions {
 }
 export function toTenji(text:string, options:ToTenjiOptions={}):string{
-    const code:Array<number> = [];
+    const code:Array<number|string> = [];
+    //空白を入れる予約
+    let spaces = 0;
 
     for(let i=0, l=text.length; i<l; i++){
         let c = katakanaToHiragana(text.charAt(i));
+        if(/\r|\n/.test(c)){
+            //行末のスペースは消す
+            spaces = 0;
+        }
+        while(spaces>0){
+            code.push(0);
+            spaces--;
+        }
         if(/^[\u3041-\u3094]$/.test(c)){
             //前につける符号
             let sub = 0;
@@ -85,7 +96,23 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                     code.push(sub);
                 }
                 code.push(hiraganaTable[c]);
+            }else{
+                //だめだった
+                code.push(c);
             }
+        }else if(c in kigouTable){
+            code.push(kigouTable[c]);
+        }else if(c==='、'){
+            code.push(0x30);
+            spaces = 1;
+        }else if(c==='。'){
+            code.push(0x32);
+            spaces = 2;
+        }else if(c==='・'){
+            code.push(0x10);
+            spaces = 1;
+        }else{
+            code.push(c);
         }
     }
     return codeToTenjiString(code);
@@ -100,10 +127,15 @@ function katakanaToHiragana(c:string):string{
 }
 
 
-function codeToTenjiString(code:Array<number>):string{
+function codeToTenjiString(code:Array<number|string>):string{
     let result = '';
     for(let i=0, l=code.length; i<l; i++){
-        result += String.fromCharCode(0x2800 + code[i]);
+        const c = code[i];
+        if('number'===typeof c){
+            result += String.fromCharCode(0x2800 + (c as number));
+        }else{
+            result += c;
+        }
     }
     return result;
 }

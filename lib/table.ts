@@ -78,3 +78,10 @@ export const goyoonTable = {
     'ぐ': 'がぎげご',
     'ゔ': 'ばびべぼ',
 };
+
+//記号
+export const kigouTable = {
+    'ー': 0x12,
+    '？': 0x22,
+    '！': 0x16,
+};
