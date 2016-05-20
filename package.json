@@ -11,7 +11,7 @@
     "test": "node run-jasmine.js",
     "watch": "npm-run-all --parallel watch:*",
     "watch:tsc": "tsc --watch",
-    "watch:test": "mkdirp dist && watch 'node run-jasmine.js' dist/ --verbose"
+    "watch:test": "mkdirp dist && watch 'node run-jasmine.js' dist/ --wait=0.2 --verbose"
   },
   "keywords": [
     "tenji",
