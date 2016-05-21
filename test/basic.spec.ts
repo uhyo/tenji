@@ -129,7 +129,7 @@ describe('Basic conversion to Tenji', ()=>{
     });
     describe('記号',()=>{
         it('basic 記号',()=>{
-            expect(toTenji('「んっー」、。？！・あ『う』（あ）')).toBe('⠤⠴⠂⠒⠤⠰⠀⠲⠀⠀⠢⠖⠐⠀⠁⠰⠤⠉⠤⠆⠶⠁⠶');
+            expect(toTenji('「んっー」、。？！・あ『う』（あ）')).toBe('⠰⠄⠴⠂⠒⠠⠆⠰⠀⠲⠀⠀⠢⠖⠐⠀⠁⠰⠤⠉⠤⠆⠐⠶⠁⠶⠂');
         });
         it('no spaces at the end of line',()=>{
             expect(toTenji(`あ、い、

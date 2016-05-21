@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Converts Japanese text and 点字.",
   "main": "dist/lib/index.js",
+  "typings": "dist/lib/index.d.ts",
   "scripts": {
     "build": "npm-run-all build:dtsm build:tsc",
     "build:dtsm": "dtsm install",
