@@ -173,4 +173,10 @@ describe('Basic conversion to Tenji', ()=>{
             expect(toTenji('あいう え お', {preserveSpaces: true})).toBe('⠁⠃⠉ ⠋ ⠊');
         });
     });
+    describe('Lower mode',()=>{
+        it('Lower all',()=>{
+            expect(toTenji('こんにちわ123あ、いう。',{lowerDots:true}))
+            .toBe('⢔⣠⡆⡦⡀⣰⠂⠆⠒⣀⠂⢠⠀⠆⠒⢤');
+        });
+    });
 });
