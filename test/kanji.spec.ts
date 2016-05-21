@@ -15,4 +15,12 @@ describe('漢点字',()=>{
         expect(toTenji('あアアあア亜亜亜ーーー', {kanji: true}))
         .toBe('⠂⡤⠂⠂⡄⠂⡤⠂⡄⠃⠊⠃⠊⠃⠊⠤⠤⠤');
     });
+    it('Spacieal わ行 characters',()=>{
+        expect(toTenji('わゐうゑを', {kanji: true}))
+        .toBe('⡀⢐⠆⠒⢐⠖⡠');
+    });
+    it('Special small か, け',()=>{
+        expect(toTenji('3ヶ月ヵ', {kanji: true}))
+        .toBe('⣰⠒⡤⢐⢖⡄⠫⡤⢐⢂⡄');
+    });
 });

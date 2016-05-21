@@ -24,8 +24,13 @@ export interface ToTenjiOptions {
     //漢点字モード
     kanji?: boolean;
     '漢点字'?: boolean;
+    //no normalize
+    noNormalize?: boolean;
 }
 export function toTenji(text:string, options:ToTenjiOptions={}):string{
+    if(!options.noNormalize){
+        text = (text as any).normalize('NFKC');
+    }
     //options
     const preserveSpaces = options.preserveSpaces || false;
     const kanji = options.kanji || options['漢点字'] || false;
@@ -48,7 +53,7 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             spaces--;
         }
         if(kanji){
-            if(/^[\u30a1-\u30f4]$/.test(c)){
+            if(/^[\u30a1-\u30f6]$/.test(c)){
                 if(mode!==KATAKANA_MODE){
                     //カタカナ符のあれ
                     code.push(nonkanji(0x16));
@@ -60,7 +65,7 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             }
         }
         c = katakanaToHiragana(c);
-        if(/^[\u3041-\u3094]$/.test(c)){
+        if(/^[\u3041-\u3096]$/.test(c)){
             //前につける符号
             let sub = 0;
             const c2 = katakanaToHiragana(text.charAt(i+1));
@@ -119,6 +124,14 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             }else if(c==='ゔ'){
                 sub = 0x10;
                 c = 'う';
+            }else if(kanji && (c==='ゐ' || c==='ゑ')){
+                //漢点字の場合変わる
+                sub = 0x28;
+                c = c==='ゐ' ? 'い' : 'え';
+            }else if(kanji && (c==='ゕ' || c==='ゖ')){
+                //漢点字で新たに定義?
+                sub = 0x28;
+                c = c==='ゕ' ? 'か' : 'け';
             }
             if(mode===ALPHABET_MODE){
                 //英語→日本語
@@ -204,6 +217,11 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             code.push(text.charAt(i));
         }
     }
+    //後始末
+    if(kanji && mode===KATAKANA_MODE){
+        //ひらがなに戻る
+        code.push(nonkanji(0x06));
+    }
     return codeToTenjiString(code);
 
     function nonkanji(code:number):number{
@@ -216,7 +234,7 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
 }
 
 function katakanaToHiragana(c:string):string{
-    if(/^[\u30a1-\u30f4]$/.test(c)){
+    if(/^[\u30a1-\u30f6]$/.test(c)){
         //detect katakana
         return String.fromCharCode(c.charCodeAt(0) - 0x60);
     }

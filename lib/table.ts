@@ -82,8 +82,8 @@ export const goyoonTable = {
 //記号
 export const kigouTable = {
     'ー': 0x12,
-    '？': 0x22,
-    '！': 0x16,
+    '?': 0x22,
+    '!': 0x16,
 };
 
 //数値
