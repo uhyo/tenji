@@ -81,5 +81,27 @@ describe('From tenji',()=>{
             expect(fromTenji('⠁⠎⠦⠠⠎⠅⠽⠀⠠⠕⠗⠙⠑⠗⠴⠜')).toBe('あのSky Orderよ');
         });
     });
+    describe('漢点字',()=>{
+        it('basic',()=>{
+            expect(fromTenji('⢱⢚⠷⣸⠓⢜',{kanji: true})).toBe('漢点字');
+            expect(fromTenji('⠕⢺⣿⡇⠤⣨⣫',{kanji: true})).toBe('夏目漱石');
+        });
+        it('kanji and others',()=>{
+            expect(fromTenji('⠷⣸⠓⢜⡠⢠⠀⢠⢀⣂⡲⠔⠒⡢⠲⠢⣀⠗⢺⡷⢌⢤', {kanji: true}))
+            .toBe('点字を、Unicode変換。');
+        });
+        it('Katakana handling',()=>{
+            expect(fromTenji('⠂⡤⠂⠂⡄⠂⡤⠂⡄⠃⠊⠃⠊⠃⠊⠤⠤⠤', {kanji: true}))
+            .toBe('あアアあア亜亜亜ーーー');
+        });
+        it('Spacieal わ行 characters',()=>{
+            expect(fromTenji('⡀⢐⠆⠒⢐⠖⡠', {kanji: true}))
+            .toBe('わゐうゑを');
+        });
+        it('Special small か, け',()=>{
+            expect(fromTenji('⣰⠒⡤⢐⢖⡄⠫⡤⢐⢂⡄', {kanji: true}))
+            .toBe('3ヶ月ヵ');
+        });
+    });
 
 });

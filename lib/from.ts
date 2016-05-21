@@ -3,6 +3,7 @@ import {
     kigouTable,
     numberTable,
     alphabetTable,
+    kanjiTable,
 } from './table';
 const NORMAL_MODE = 0;
 const NUMBER_MODE = 1;
@@ -13,14 +14,22 @@ const DAKUON_MODIFIER = 1;
 const HANDAKUON_MODIFIER = 2;
 const YOON_MODIFIER = 4;
 const MODIFIER_2 = 8;   //2の点のmodifier
+const KATAKANA_MODIFIER = 16;   //カタカナ状態
 
 //ALPHABET_MODE用
 const CAPITAL_MODIFIER = 1;
 const CAPITAL_SEQ_MODIFIER = 2;
 const ALPHABET_QUOTE_MODIFIER = 4;
 
+interface Parser{
+    (text:string,i:number):{
+        char:string;
+        nextIndex:number;
+    }
+}
 //inverse tableはchacheしておく
 let invHiraganaTable = null;
+let kanjiParser:Parser = null;
 
 export interface FromTenjiOptions {
     space?: string;
@@ -35,6 +44,8 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
     //flags
     let mode = NORMAL_MODE;
     let modifier = NO_MODIFIER;
+    //漢点字のときにカタカナモードのフラグ
+    let katakana_flg = false;
 
     let skipSpaces = 0;
 
@@ -59,6 +70,23 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                     modifier = NO_MODIFIER;
                 }
                 continue;
+            }
+
+            if(kanji){
+               if(code & 0x09){
+                   //これ漢字っぽくなーい？？？？？？？？
+                   const p = getKanjiParser();
+                   const {char, nextIndex} = p(text, i);
+                   if(char != null){
+                       //漢字を発見した
+                       result += char;
+                       i = nextIndex-1;
+                       continue;
+                   }
+               }else{
+                   //処理用に上にずらす
+                   code = nonkanji(code);
+               }
             }
 
             if(mode===NUMBER_MODE){
@@ -87,7 +115,7 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                     //大文字符
                     modifier |= CAPITAL_MODIFIER;
                     if(0x2800 <= cc2 && cc <= 0x28FF){
-                        const code2 = cc2 - 0x2800;
+                        const code2 = nonkanji(cc2 - 0x2800);
                         if(code2===0x20){
                             //大文字符×2
                             modifier |= CAPITAL_SEQ_MODIFIER;
@@ -129,7 +157,7 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
 
             if((code===0x22 || code===0x32) && 0x2800<=cc2 && cc2<=0x28FF){
                 //疑問符/句点だけどmodifierかもしれない
-                const code2 = cc2 - 0x2800;
+                const code2 = nonkanji(cc2 - 0x2800);
                 //次の文字の母音と子音を取得
                 const boin  = code2 & 0x0b;
                 const shiin = code2 & 0x34;
@@ -143,7 +171,7 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
             }
 
             //文字の変換
-            if(code in invh){
+            if(code in invh && (!kanji || (code!==0x16 && code!==0x06))){
                 //ひらがなに変換可能
                 let suffix = '';
                 if(modifier & YOON_MODIFIER){
@@ -185,6 +213,16 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                         code= modifier & DAKUON_MODIFIER ? 0x09 : 0x2d;
                         //ふがぷにならないようにする
                         modifier = modifier ^ HANDAKUON_MODIFIER;
+                    }else if(kanji && (modifier & HANDAKUON_MODIFIER) && (code===0x03 || code===0x0b)){
+                        //漢点字の場合のゐ・ゑ
+                        result += katakana(code===0x03 ? 'ゐ' : 'ゑ');
+                        modifier = NO_MODIFIER;
+                        continue;
+                    }else if(kanji && (modifier & HANDAKUON_MODIFIER) && (code===0x21 || code===0x2b)){
+                        //漢点字のヵ・ヶ
+                        result += katakana(code===0x21 ? 'ゕ' : 'ゖ');
+                        modifier = NO_MODIFIER;
+                        continue;
                     }else{
                         //比較的ふつうの拗音
                         if(boin===0x01){
@@ -227,7 +265,7 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                         continue;
                     }else if(code===0x09){
                         //ゔの処理
-                        result += 'ゔ' + suffix;
+                        result += katakana('ゔ') + katakana(suffix);
                         continue;
                     }
                 }else if(modifier & HANDAKUON_MODIFIER){
@@ -235,12 +273,12 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                     const shiin = code & 0x34;
                     if(shiin===0x24){
                         //は行
-                        result += String.fromCharCode(invh[code].charCodeAt(0)+2) + suffix;
+                        result += katakana(String.fromCharCode(invh[code].charCodeAt(0)+2)) + katakana(suffix);
                         continue;
                     }
                 }
                 modifier = NO_MODIFIER;
-                result += invh[code] + suffix;
+                result += katakana(invh[code]) + katakana(suffix);
             }else if((code & 0x38) === code){
                 //modifierだ
 
@@ -348,6 +386,14 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                     mode = ALPHABET_MODE;
                     modifier = ALPHABET_QUOTE_MODIFIER;
                     continue;
+                }else if(kanji && code===0x16){
+                    //カタカナ符（漢点字）
+                    katakana_flg = true;
+                    continue;
+                }else if(kanji && code===0x06){
+                    //カタカナ符（おわり）
+                    katakana_flg = false;
+                    continue;
                 }
                 modifier = NO_MODIFIER;
             }
@@ -357,6 +403,23 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
         }
     }
     return result;
+    function nonkanji(code:number):number{
+        if(kanji){
+            return (code&0x06)>>1 | (code&0x30)>>1 | (code&0x40)>>4 | (code&0x80)>>2;
+        }else{
+            return code;
+        }
+    }
+    function katakana(char:string):string{
+        if(char===''){
+            return '';
+        }
+        if(katakana_flg){
+            return String.fromCharCode(char.charCodeAt(0) + 0x60);
+        }else{
+            return char;
+        }
+    }
 }
 
 //caching
@@ -370,7 +433,13 @@ function getInvHiraganaTable():any{
     }
     return invHiraganaTable;
 }
-function makeParser(table){
+function getKanjiParser():any{
+    if(kanjiParser != null){
+        return kanjiParser;
+    }
+    return kanjiParser = makeParser(kanjiTable);
+}
+function makeParser(table):Parser{
     //parserを作る
     //まず下準備でテーブル作り
     const t_base = {};
@@ -394,22 +463,29 @@ function makeParser(table){
             const code = text.charCodeAt(i);
             if(code < 0x2800 || 0x28FF < code){
                 //点字ではない
-                return null;
+                return {
+                    char: null,
+                    nextIndex: i,
+                };
             }
             const cc = code - 0x2800;
             const arr = t[cc];
-            console.log('ahh!',cc.toString(16),t, arr);
             if(arr == null){
                 //ない
-                return null;
+                return {
+                    char: null,
+                    nextIndex: i,
+                };
             }
             //あったのでバース継続
             const t2 = {};
             for(let a of arr){
                 if(a.length===0){
                     //パース完了
-                    console.log('return ',a._char);
-                    return a._char;
+                    return {
+                        char: a._char,
+                        nextIndex: i+1,
+                    };
                 }
                 const c0 = a[0];
                 if(t2[c0] == null){
@@ -417,7 +493,7 @@ function makeParser(table){
                 }
                 const a2 = a.slice(1);
                 a2._char = a._char;
-                t2[c0].push(a.slice(1));
+                t2[c0].push(a2);
             }
             t = t2;
             i++;
