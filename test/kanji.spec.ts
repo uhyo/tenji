@@ -23,4 +23,10 @@ describe('漢点字',()=>{
         expect(toTenji('3ヶ月ヵ', {kanji: true}))
         .toBe('⣰⠒⡤⢐⢖⡄⠫⡤⢐⢂⡄');
     });
+    it('ー is both Hiragana & Katakana',()=>{
+        expect(toTenji('あーす', {kanji: true}))
+        .toBe('⠂⠤⢲');
+        expect(toTenji('アース', {kanji: true}))
+        .toBe('⡤⠂⠤⢲⡄');
+    });
 });

@@ -59,7 +59,7 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                     code.push(nonkanji(0x16));
                     mode = KATAKANA_MODE;
                 }
-            }else if(mode===KATAKANA_MODE){
+            }else if(c!=='ー' && mode===KATAKANA_MODE){
                 code.push(nonkanji(0x06));
                 mode = NORMAL_MODE;
             }
@@ -162,7 +162,9 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             }
         }else if(c in kigouTable){
             code.push(...nonkanjis(kigouTable[c]));
-            mode = NORMAL_MODE;
+            if(c!=='ー'){
+                mode = NORMAL_MODE;
+            }
         }else if(c==='、'){
             code.push(nonkanji(0x30));
             spaces = 1;
