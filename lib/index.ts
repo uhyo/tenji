@@ -7,22 +7,30 @@ import {
     kigouTable,
     numberTable,
     alphabetTable,
+    kanjiTable,
 } from './table';
 
 const NORMAL_MODE = 0;
 const NUMBER_MODE = 1;
 const ALPHABET_MODE = 2;
+//カタカナ状態（漢点字）
+const KATAKANA_MODE = 3;
 
 export interface ToTenjiOptions {
     //空白を保存
     preserveSpaces?: boolean;
     //上6点ではなく下6点を使用
     lowerDots?: boolean;
+    //漢点字モード
+    kanji?: boolean;
+    '漢点字'?: boolean;
 }
 export function toTenji(text:string, options:ToTenjiOptions={}):string{
     //options
     const preserveSpaces = options.preserveSpaces || false;
-    const lowerDots = options.lowerDots || false;
+    const kanji = options.kanji || options['漢点字'] || false;
+    //漢点字のときは下を強制
+    const lowerDots = kanji || options.lowerDots || false;
     const code:Array<number|string> = [];
     //空白を入れる予約
     let spaces = 0;
@@ -30,7 +38,7 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
     let mode = NORMAL_MODE;
 
     for(let i=0, l=text.length; i<l; i++){
-        let c = katakanaToHiragana(text.charAt(i));
+        let c = text.charAt(i);
         if(/\r|\n/.test(c)){
             //行末のスペースは消す
             spaces = 0;
@@ -39,6 +47,19 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             code.push(0);
             spaces--;
         }
+        if(kanji){
+            if(/^[\u30a1-\u30f4]$/.test(c)){
+                if(mode!==KATAKANA_MODE){
+                    //カタカナ符のあれ
+                    code.push(nonkanji(0x16));
+                    mode = KATAKANA_MODE;
+                }
+            }else if(mode===KATAKANA_MODE){
+                code.push(nonkanji(0x06));
+                mode = NORMAL_MODE;
+            }
+        }
+        c = katakanaToHiragana(c);
         if(/^[\u3041-\u3094]$/.test(c)){
             //前につける符号
             let sub = 0;
@@ -123,7 +144,9 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                 //だめだった
                 code.push(c);
             }
-            mode = NORMAL_MODE;
+            if(mode!==KATAKANA_MODE){
+                mode = NORMAL_MODE;
+            }
         }else if(c in kigouTable){
             code.push(nonkanji(kigouTable[c]));
             mode = NORMAL_MODE;
@@ -166,7 +189,15 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                 code.push(nonkanji(0x20));
                 cd += 0x20;
             }
-            code.push(alphabetTable[cd-0x61]);
+            code.push(nonkanji(alphabetTable[cd-0x61]));
+        }else if(kanji && c in kanjiTable){
+            //漢点字
+            if(mode===ALPHABET_MODE){
+                //英語→日本語
+                code.push(nonkanji(0x24));
+                mode = NORMAL_MODE;
+            }
+            code.push(...kanjiTable[c]);
         }else if(!preserveSpaces && /\s/.test(c) && !/\r|\n/.test(c)){
             code.push(nonkanji(0));
         }else{
