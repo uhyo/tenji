@@ -25,6 +25,10 @@ describe('From tenji',()=>{
                 expect(fromTenji('⠐⠥⠐⠧⠐⠭⠐⠯⠐⠮')).toBe('ばびぶべぼ');
                 expect(fromTenji('⠐⠉')).toBe('ゔ');
             });
+            it('濁音混じり',()=>{
+                expect(fromTenji('⠐⠡⠹')).toBe('がす');
+                expect(fromTenji('⠐⠡⠒⠹⠒')).toBe('がーすー');
+            });
             it('半濁音',()=>{
                 expect(fromTenji('⠠⠥⠠⠧⠠⠭⠠⠯⠠⠮')).toBe('ぱぴぷぺぽ');
             });
@@ -101,6 +105,10 @@ describe('From tenji',()=>{
         it('Special small か, け',()=>{
             expect(fromTenji('⣰⠒⡤⢐⢖⡄⠫⡤⢐⢂⡄', {kanji: true}))
             .toBe('3ヶ月ヵ');
+        });
+        it('Katakana', ()=>{
+            expect(fromTenji('⡤⠐⢲⠤⠲⡄', {kanji: true})).toBe('シュール');
+            expect(fromTenji('⡤⣴⠰⢲⠤⠲⡄', {kanji: true})).toBe('モジュール');
         });
     });
 

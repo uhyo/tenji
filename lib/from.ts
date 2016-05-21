@@ -264,11 +264,13 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                     const shiin = code & 0x34;
                     if(shiin===0x20 || shiin===0x30 || shiin===0x14 || shiin===0x24){
                         //濁音化可能
-                        result += String.fromCharCode(invh[code].charCodeAt(0)+1) + suffix;
+                        result += katakana(String.fromCharCode(invh[code].charCodeAt(0)+1)) + katakana(suffix);
+                        modifier = NO_MODIFIER;
                         continue;
                     }else if(code===0x09){
                         //ゔの処理
                         result += katakana('ゔ') + katakana(suffix);
+                        modifier = NO_MODIFIER;
                         continue;
                     }
                 }else if(modifier & HANDAKUON_MODIFIER){
@@ -277,6 +279,7 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
                     if(shiin===0x24){
                         //は行
                         result += katakana(String.fromCharCode(invh[code].charCodeAt(0)+2)) + katakana(suffix);
+                        modifier = NO_MODIFIER;
                         continue;
                     }
                 }
