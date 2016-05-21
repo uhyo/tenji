@@ -1,5 +1,5 @@
 //清音のテーブル
-export const hiraganaTable = {
+export const hiraganaTable:any = {
     'あ': 0x01,
     'い': 0x03,
     'う': 0x09,
@@ -55,7 +55,7 @@ export const dakuonList = 'がぎぐげござじずぜぞだぢづでどばび�
 export const handakuonList = 'ぱぴぷぺぽ';
 
 //拗音→メイン音変換テーブル
-export const yoonTable = {
+export const yoonTable:any = {
     'き': 'かくこけ',
     'し': 'さすそせ',
     'ち': 'たつとて',
@@ -70,7 +70,7 @@ export const yoonTable = {
     'ぴ': 'ぱぷぽぺ',
 };
 //合拗音
-export const goyoonTable = {
+export const goyoonTable:any = {
     'う': 'あいえお',
     'く': 'かきけこ',
     'つ': 'たちてと',
@@ -80,7 +80,7 @@ export const goyoonTable = {
 };
 
 //記号
-export const kigouTable = {
+export const kigouTable:any = {
     'ー': [0x12],
     '?': [0x22],
     '!': [0x16],
@@ -130,7 +130,7 @@ export const alphabetTable = [
 })();
 */
 
-export const kanjiTable = {
+export const kanjiTable:any = {
     '一': [0xa1, 0x0a],
     '丁': [0xa1, 0x7e],
     '七': [0xa1, 0x3e],

@@ -5,8 +5,9 @@
   "main": "dist/lib/index.js",
   "typings": "dist/lib/index.d.ts",
   "scripts": {
-    "build": "npm-run-all build:dtsm build:tsc",
+    "build": "npm-run-all build:dtsm build:tsc build:table",
     "build:dtsm": "dtsm install",
+    "build:table": "node ./dist/build/index.js",
     "build:tsc": "tsc",
     "clean": "rimraf dist",
     "test": "node run-jasmine.js",

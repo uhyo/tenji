@@ -21,15 +21,9 @@ const CAPITAL_MODIFIER = 1;
 const CAPITAL_SEQ_MODIFIER = 2;
 const ALPHABET_QUOTE_MODIFIER = 4;
 
-interface Parser{
-    (text:string,i:number):{
-        char:string;
-        nextIndex:number;
-    }
-}
+const invKanjiTable = require('./inv-kanji.json');
 //inverse tableはchacheしておく
 let invHiraganaTable = null;
-let kanjiParser:Parser = null;
 
 export interface FromTenjiOptions {
     space?: string;
@@ -50,7 +44,7 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
     let skipSpaces = 0;
 
     let result = '';
-    for(let i=0, l=text.length; i<l; i++){
+    f: for(let i=0, l=text.length; i<l; i++){
         const cc = text.charCodeAt(i);
         const cc2= text.charCodeAt(i+1);
         if(0x2800 <= cc && cc <= 0x28FF){
@@ -75,13 +69,22 @@ export function fromTenji(text:string, options:FromTenjiOptions={}):string{
             if(kanji){
                if(code & 0x09){
                    //これ漢字っぽくなーい？？？？？？？？
-                   const p = getKanjiParser();
-                   const {char, nextIndex} = p(text, i);
-                   if(char != null){
-                       //漢字を発見した
-                       result += char;
-                       i = nextIndex-1;
-                       continue;
+                   let t = invKanjiTable;
+                   let j = i;
+                   while(t){
+                       if('string'===typeof t){
+                           result += t;
+                           i = j - 1;
+                           continue f;
+                       }
+                       const c = text.charCodeAt(j);
+                       if(0x2800<=c && c<=0x28FF){
+                           t = t[c - 0x2800];
+                           j++;
+                       }else{
+                           //漢字にならなかった
+                           break;
+                       }
                    }
                }else{
                    //処理用に上にずらす
@@ -433,12 +436,7 @@ function getInvHiraganaTable():any{
     }
     return invHiraganaTable;
 }
-function getKanjiParser():any{
-    if(kanjiParser != null){
-        return kanjiParser;
-    }
-    return kanjiParser = makeParser(kanjiTable);
-}
+/*
 function makeParser(table):Parser{
     //parserを作る
     //まず下準備でテーブル作り
@@ -500,3 +498,4 @@ function makeParser(table):Parser{
         }
     };
 }
+*/
