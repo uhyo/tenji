@@ -161,7 +161,7 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                 mode = NORMAL_MODE;
             }
         }else if(c in kigouTable){
-            code.push(nonkanji(kigouTable[c]));
+            code.push(...nonkanjis(kigouTable[c]));
             mode = NORMAL_MODE;
         }else if(c==='、'){
             code.push(nonkanji(0x30));
@@ -230,6 +230,9 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
         }else{
             return code;
         }
+    }
+    function nonkanjis(code:Array<number>):Array<number>{
+        return code.map(nonkanji);
     }
 }
 
