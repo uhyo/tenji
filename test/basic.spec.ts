@@ -162,4 +162,15 @@ describe('Basic conversion to Tenji', ()=>{
             .toBe('⠰⠠⠃⠼⠛⠓⠛');
         });
     });
+    describe('Spaces',()=>{
+        it('Convert spaces by default',()=>{
+            expect(toTenji('きょーわ　はれ')).toBe('⠈⠪⠒⠄⠀⠥⠛');
+            expect(toTenji(`あしたわ　あめ
+いまわ　くもり`, {preserveSpaces: false})).toBe(`⠁⠳⠕⠄⠀⠁⠿
+⠃⠵⠄⠀⠩⠾⠓`);
+        });
+        it('Preserve spaces by option',()=>{
+            expect(toTenji('あいう え お', {preserveSpaces: true})).toBe('⠁⠃⠉ ⠋ ⠊');
+        });
+    });
 });

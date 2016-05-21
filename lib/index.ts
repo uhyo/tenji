@@ -14,8 +14,11 @@ const NUMBER_MODE = 1;
 const ALPHABET_MODE = 2;
 
 export interface ToTenjiOptions {
+    preserveSpaces?: boolean;
 }
 export function toTenji(text:string, options:ToTenjiOptions={}):string{
+    //options
+    const preserveSpaces = options.preserveSpaces || false;
     const code:Array<number|string> = [];
     //空白を入れる予約
     let spaces = 0;
@@ -160,6 +163,8 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                 cd += 0x20;
             }
             code.push(alphabetTable[cd-0x61]);
+        }else if(!preserveSpaces && /\s/.test(c) && !/\r|\n/.test(c)){
+            code.push(0);
         }else{
             code.push(text.charAt(i));
         }
