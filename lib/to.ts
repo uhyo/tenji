@@ -161,6 +161,25 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             if(mode!==KATAKANA_MODE){
                 mode = NORMAL_MODE;
             }
+        }else if(c === '.' && text.charAt(i+1) === '.' && text.charAt(i+2) === '.') {
+            // 3つの.は3点リーダ
+            code.push(nonkanji(0), nonkanji(0x02), nonkanji(0x02), nonkanji(0x02));
+            spaces = 1;
+            i += 2;
+        }else if(/^[0-9]$/.test(c)){
+            //数字
+            if(mode !== NUMBER_MODE){
+                //数符
+                code.push(nonkanji(0x3c));
+                mode = NUMBER_MODE;
+            }
+            code.push(nonkanji(numberTable[c]));
+        }else if(mode === NUMBER_MODE && c==='.'){
+            //小数点
+            code.push(nonkanji(0x02));
+        }else if(mode === NUMBER_MODE && c===','){
+            //位取り点
+            code.push(nonkanji(0x04));
         }else if(c in kigouTable){
             code.push(...nonkanjis(kigouTable[c]));
             if(c!=='ー'){
@@ -178,20 +197,6 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
             code.push(nonkanji(0x10));
             spaces = 1;
             mode = NORMAL_MODE;
-        }else if(/^[0-9]$/.test(c)){
-            //数字
-            if(mode !== NUMBER_MODE){
-                //数符
-                code.push(nonkanji(0x3c));
-                mode = NUMBER_MODE;
-            }
-            code.push(nonkanji(numberTable[c]));
-        }else if(mode === NUMBER_MODE && c==='.'){
-            //小数点
-            code.push(nonkanji(0x02));
-        }else if(mode === NUMBER_MODE && c===','){
-            //位取り点
-            code.push(nonkanji(0x04));
         }else if(/^[a-zA-Z]$/.test(c)){
             //アルファベット
             if(mode !== ALPHABET_MODE){

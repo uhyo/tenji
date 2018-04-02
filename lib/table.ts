@@ -91,9 +91,13 @@ export const kigouTable:any = {
     '『': [0x30, 0x24],
     '』': [0x24, 0x06],
     '%': [0x30, 0x0f],
-    '&': [0x30, 0x2f],
+    // アンパサンドは前後にスペースが必要
+    '&': [0, 0x30, 0x2f, 0],
     '#': [0x30, 0x29],
     '*': [0x30, 0x21],
+    ',': [0x20],
+    ';': [0x60],
+    ':': [0x12],
 };
 
 //数値
@@ -108,6 +112,7 @@ export const alphabetTable = [
 export const alphabetKigouTable = {
     '/': [0x38, 0x0c],
     '.': [0x32],
+    '．': [0x32],
 };
 
 //data below is taken from http://wentwayup.tamaliver.jp/e405340.html

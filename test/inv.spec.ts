@@ -1,5 +1,3 @@
-///<reference path='../typings/bundle.d.ts' />
-
 //Test from tenji.fromTenji
 import {fromTenji} from '../lib/index';
 

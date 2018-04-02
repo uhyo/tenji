@@ -1,5 +1,3 @@
-///<reference path='../typings/bundle.d.ts' />
-
 import {toTenji} from '../lib/index';
 
 describe('漢点字',()=>{
@@ -29,4 +27,8 @@ describe('漢点字',()=>{
         expect(toTenji('アース', {kanji: true}))
         .toBe('⡤⠂⠤⢲⡄');
     });
+    it('漢点字 and 記号', ()=>{
+        expect(toTenji('漢点字: 漢字の点字…', {kanji: true}))
+        .toBe('⢱⢚⠷⣸⠓⢜⠤⠀⢱⢚⠓⢜⡔⠷⣸⠓⢜⠀⠄⠄⠄')
+    })
 });

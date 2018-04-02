@@ -5,6 +5,6 @@
     "target": "es5",
     "outDir": "dist/"
   },
-  "include": ["build/**/*.ts", "lib/**/*.ts"],
+  "include": ["build/**/*.ts", "lib/**/*.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
