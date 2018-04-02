@@ -161,6 +161,10 @@ describe('Basic conversion to Tenji', ()=>{
             expect(toTenji('B787'))
             .toBe('⠰⠠⠃⠼⠛⠓⠛');
         });
+        it('alphabetic 記号s', ()=>{
+            expect(toTenji('Foo/bar.'))
+            .toBe('⠰⠠⠋⠕⠕⠸⠌⠃⠁⠗⠲')
+        });
     });
     describe('Spaces',()=>{
         it('Convert spaces by default',()=>{

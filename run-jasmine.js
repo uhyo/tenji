@@ -1,6 +1,6 @@
 //https://github.com/bcaudan/jasmine-spec-reporter/blob/master/docs/jasmine-npm-configuration.md
 var Jasmine = require('jasmine');
-var SpecReporter = require('jasmine-spec-reporter');
+var SpecReporter = require('jasmine-spec-reporter').SpecReporter;
 var noop = function() {};
 
 var jrunner = new Jasmine();
