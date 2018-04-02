@@ -8,6 +8,7 @@ import {
     numberTable,
     alphabetTable,
     kanjiTable,
+    alphabetKigouTable,
 } from './table';
 
 const NORMAL_MODE = 0;
@@ -205,6 +206,13 @@ export function toTenji(text:string, options:ToTenjiOptions={}):string{
                 cd += 0x20;
             }
             code.push(nonkanji(alphabetTable[cd-0x61]));
+        }else if(c in alphabetKigouTable){
+            if(mode !== ALPHABET_MODE){
+                // 外字符
+                code.push(nonkanji(0x30));
+                mode = ALPHABET_MODE;
+            }
+            code.push(...nonkanjis(alphabetKigouTable[c]));
         }else if(kanji && c in kanjiTable){
             //漢点字
             if(mode===ALPHABET_MODE){
