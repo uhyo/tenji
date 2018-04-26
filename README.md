@@ -40,6 +40,7 @@ Converts Tenji to Japanese Text.
 MIT
 
 # Changelog
+- **v1.0.3**: Fix the bug that "⠰" which is used as 読点 also made next hiragana 濁音.
 - **v1.0.2**: Can now convert some more 記号s.
 - **v1.0.1**: Bug fix
 - **v1.0.0**
