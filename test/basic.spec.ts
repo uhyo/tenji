@@ -127,12 +127,18 @@ describe('Basic conversion to Tenji', ()=>{
     });
     describe('記号',()=>{
         it('basic 記号',()=>{
-            expect(toTenji('「んっー」、。？！・あ『う』（あ）%％&あ')).toBe('⠰⠄⠴⠂⠒⠠⠆⠰⠀⠲⠀⠀⠢⠖⠐⠀⠁⠰⠤⠉⠤⠆⠐⠶⠁⠶⠂⠰⠏⠰⠏⠀⠰⠯⠀⠁');
+            expect(toTenji('「んっー」、。？！・あ『う』（あ）%％&あ')).toBe('⠤⠴⠂⠒⠤⠰⠀⠲⠀⠀⠢⠖⠐⠀⠁⠰⠤⠉⠤⠆⠶⠁⠶⠰⠏⠰⠏⠀⠰⠯⠀⠁');
         });
         it('no spaces at the end of line',()=>{
             expect(toTenji(`あ、い、
 う。`)).toBe(`⠁⠰⠀⠃⠰
 ⠉⠲`);
+        });
+        it('nested brackets', () => {
+            expect(toTenji('（あ（い）う）')).toBe('⠶⠁⠰⠶⠃⠶⠆⠉⠶');
+        })
+        it('nested quotes', () => {
+            expect(toTenji('「あ「い」う」')).toBe('⠤⠁⠰⠤⠃⠤⠆⠉⠤');
         });
     });
     describe('Numbers',()=>{

@@ -42,6 +42,10 @@ export function toTenji(text: string, options: ToTenjiOptions = {}): string {
   let spaces = 0;
   //モード
   let mode = NORMAL_MODE;
+  // カッコのネストレベル
+  let bracketLevel = 0;
+  // カギ類のネストレベル
+  let quoteLevel = 0;
 
   for (let i = 0, l = text.length; i < l; i++) {
     let c = text.charAt(i);
@@ -199,6 +203,41 @@ export function toTenji(text: string, options: ToTenjiOptions = {}): string {
     } else if (mode === NUMBER_MODE && c === ",") {
       //位取り点
       code.push(nonkanji(0x04));
+    } else if (c === "(") {
+      // カッコ
+      if (bracketLevel === 0) {
+        code.push(nonkanji(0x36));
+      } else {
+        code.push(nonkanji(0x30), nonkanji(0x36));
+      }
+      bracketLevel++;
+    } else if (c === ")") {
+      if (bracketLevel <= 1) {
+        code.push(nonkanji(0x36));
+      } else {
+        code.push(nonkanji(0x36), nonkanji(0x06));
+      }
+      bracketLevel--;
+      if (bracketLevel < 0) {
+        bracketLevel = 0;
+      }
+    } else if (c === "「") {
+      if (quoteLevel === 0) {
+        code.push(nonkanji(0x24));
+      } else {
+        code.push(nonkanji(0x30), nonkanji(0x24))
+      }
+      quoteLevel++;
+    } else if (c === "」") {
+      if (quoteLevel <= 1) {
+        code.push(nonkanji(0x24));
+      } else {
+        code.push(nonkanji(0x24), nonkanji(0x06));
+      }
+      quoteLevel--;
+      if (quoteLevel < 0) {
+        quoteLevel = 0;
+      }
     } else if (c in kigouTable) {
       code.push(...nonkanjis(kigouTable[c]));
       if (c !== "ー") {
