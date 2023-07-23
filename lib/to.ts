@@ -14,8 +14,9 @@ import {
 const NORMAL_MODE = 0;
 const NUMBER_MODE = 1;
 const ALPHABET_MODE = 2;
+const CAPITAL_ALPHABET_MODE = 3;
 //カタカナ状態（漢点字）
-const KATAKANA_MODE = 3;
+const KATAKANA_MODE = 4;
 
 export interface ToTenjiOptions {
   //空白を保存
@@ -144,7 +145,7 @@ export function toTenji(text: string, options: ToTenjiOptions = {}): string {
         sub = 0x28;
         c = c === "ゕ" ? "か" : "け";
       }
-      if (mode === ALPHABET_MODE) {
+      if (mode === ALPHABET_MODE || mode === CAPITAL_ALPHABET_MODE) {
         //英語→日本語
         code.push(nonkanji(0x24));
         mode = NORMAL_MODE;
@@ -257,20 +258,28 @@ export function toTenji(text: string, options: ToTenjiOptions = {}): string {
       mode = NORMAL_MODE;
     } else if (/^[a-zA-Z]$/.test(c)) {
       //アルファベット
-      if (mode !== ALPHABET_MODE) {
+      if (mode !== ALPHABET_MODE && mode !== CAPITAL_ALPHABET_MODE) {
         //外字符
         code.push(nonkanji(0x30));
-        mode = ALPHABET_MODE;
+        // アルファベットが全て大文字で連続の場合は二重大文字符を出力
+        if (text.slice(i).match(/^[A-Z]{2,}(?![a-z])/)) {
+          code.push(nonkanji(0x20), nonkanji(0x20));
+          mode = CAPITAL_ALPHABET_MODE;
+        } else {
+          mode = ALPHABET_MODE;
+        }
       }
       let cd = c.charCodeAt(0);
       if (cd <= 0x5a) {
-        //大文字なので大文字符（TODO: 二重大文字符は？）
+        //大文字なので大文字符
+        if (mode !== CAPITAL_ALPHABET_MODE) {
         code.push(nonkanji(0x20));
+        }
         cd += 0x20;
       }
       code.push(nonkanji(alphabetTable[cd - 0x61]));
     } else if (c in alphabetKigouTable) {
-      if (mode !== ALPHABET_MODE) {
+      if (mode !== ALPHABET_MODE && mode !== CAPITAL_ALPHABET_MODE) {
         // 外字符
         code.push(nonkanji(0x30));
         mode = ALPHABET_MODE;
@@ -278,7 +287,7 @@ export function toTenji(text: string, options: ToTenjiOptions = {}): string {
       code.push(...nonkanjis(alphabetKigouTable[c]));
     } else if (kanji && c in kanjiTable) {
       //漢点字
-      if (mode === ALPHABET_MODE) {
+      if (mode === ALPHABET_MODE || mode === CAPITAL_ALPHABET_MODE) {
         //英語→日本語
         code.push(nonkanji(0x24));
         mode = NORMAL_MODE;

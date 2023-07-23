@@ -157,10 +157,12 @@ describe('Basic conversion to Tenji', ()=>{
         it('basic alphabets',()=>{
             expect(toTenji('abcdefghijklmnopqrstuvwxyz'))
             .toBe('⠰⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵');
-            expect(toTenji('USA'))
-            .toBe('⠰⠠⠥⠠⠎⠠⠁');
             expect(toTenji('Aきゅう')).toBe('⠰⠠⠁⠤⠈⠩⠉');
         });
+        it('sequence of capitals', ()=>{
+            expect(toTenji('USA')).toBe('⠰⠠⠠⠥⠎⠁');
+            expect(toTenji('SSきゅう')).toBe('⠰⠠⠠⠎⠎⠤⠈⠩⠉');
+        })
         it('alphabet and numbers',()=>{
             expect(toTenji('B787'))
             .toBe('⠰⠠⠃⠼⠛⠓⠛');
