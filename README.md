@@ -40,6 +40,7 @@ Converts Tenji to Japanese Text.
 MIT
 
 # Changelog
+- **v1.0.4**: Fix the bug that 「」 and （） are converted to 第二かぎ and 第二括弧 respectively, where they should be 第一かぎ and 第一括弧. Also, support emission of 二重大文字符 when appropriate.
 - **v1.0.3**: Fix the bug that "⠰" which is used as 読点 also made next hiragana 濁音.
 - **v1.0.2**: Can now convert some more 記号s.
 - **v1.0.1**: Bug fix
